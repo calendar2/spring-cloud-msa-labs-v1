@@ -1,0 +1,54 @@
+# IntelliJ IDEA 관련 파일
+.idea/
+*.iml
+
+# Maven/Gradle 관련 파일
+target/
+build/
+**/bin/
+*.war
+*.jar
+!gradle-wrapper.jar
+.gradle/
+**/.gradle/
+
+# Node.js 및 React 관련 파일
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 환경 변수 및 민감한 정보
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 로그 파일 및 임시 파일
+*.log
+logs/
+*.swp
+
+# 운영체제별 파일
+.DS_Store
+Thumbs.db
+
+# 테스트 및 코드 커버리지 관련 파일
+coverage/
+*.out
+
+# 빌드 결과물 (React)
+dist/
+
+# IDE 및 에디터 설정 파일
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# 백업 및 임시 파일
+*.bak
+*.tmp
+
+# 기타 설정 및 캐시 파일
+.cache/
