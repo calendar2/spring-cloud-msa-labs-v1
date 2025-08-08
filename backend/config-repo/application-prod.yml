@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  level:
+    root: WARN
+    com.sesac: INFO
+
+info:
+  environment: "Production"
+  debug: false

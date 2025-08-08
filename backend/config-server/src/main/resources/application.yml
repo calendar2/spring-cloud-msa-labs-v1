@@ -10,6 +10,4 @@ spring:
     config:
       server:
         native:
-          search-locations: C:/Users/user/Desktop/sesac/spring-cloud-msa-labs-v1/backend/config-repo
-#        git:
-#          uri: file://C:\Users\user\Desktop\sesac\spring-cloud-msa-labs-v1\backend\config-repo
+          search-locations: file:///${user.dir}/backend/config-repo
