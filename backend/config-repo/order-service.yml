@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:mysql://localhost:3307/order_service_db
+
+server:
+  port: 8083

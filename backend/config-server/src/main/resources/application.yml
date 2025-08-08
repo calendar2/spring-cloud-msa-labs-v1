@@ -1,0 +1,15 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: C:/Users/user/Desktop/sesac/spring-cloud-msa-labs-v1/backend/config-repo
+#        git:
+#          uri: file://C:\Users\user\Desktop\sesac\spring-cloud-msa-labs-v1\backend\config-repo
