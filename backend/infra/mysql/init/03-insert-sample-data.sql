@@ -1,12 +1,11 @@
 -- User Service 샘플 데이터
 USE `user_service_db`;
 
-INSERT INTO users (email, password, name) VALUES
-    ('admin@example.com', 'admin123', '관리자'),
-    ('kim@example.com', 'password', '김철수'),
-    ('lee@example.com', 'password', '이영희'),
-    ('park@example.com', 'password', '박민수'),
-    ('choi@example.com', 'password', '최지은');
+INSERT INTO user_service_db.users (email, password, name)
+VALUES
+    ('user1@example.com', '$2a$10$TR449R5BNAKor7G8C9QyjuwONmlkrQiCybwkEOUAVVN2rzFiAqQC6', '박민수'),
+    ('user2@example.com', '$2a$10$TR449R5BNAKor7G8C9QyjuwONmlkrQiCybwkEOUAVVN2rzFiAqQC6', '최지은'),
+    ('admin@example.com', '$2a$10$TR449R5BNAKor7G8C9QyjuwONmlkrQiCybwkEOUAVVN2rzFiAqQC6', '관리자');
 
 -- Product Service 샘플 데이터
 USE `product_service_db`;
