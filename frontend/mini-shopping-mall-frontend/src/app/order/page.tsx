@@ -3,21 +3,31 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Product, productApi, orderApi } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function OrderPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [userId, setUserId] = useState(2); // 임시 사용자 ID
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   
   const productId = Number(searchParams.get('productId'));
   const initialQuantity = Number(searchParams.get('quantity')) || 1;
 
   useEffect(() => {
+    // 인증 로딩 중이면 대기
+    if (authLoading) return;
+    
+    // 로그인 확인
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
     setQuantity(initialQuantity);
     
     const fetchProduct = async () => {
@@ -33,17 +43,17 @@ export default function OrderPage() {
     if (productId) {
       fetchProduct();
     }
-  }, [productId, initialQuantity]);
+  }, [productId, initialQuantity, authLoading, user]);
 
   const handleSubmitOrder = async () => {
-    if (!product) return;
+    if (!product || !user) return;
     
     setLoading(true);
     setError(null);
     
     try {
       const order = await orderApi.createOrder({
-        userId,
+        userId: user.id,
         productId: product.id,
         quantity,
       });

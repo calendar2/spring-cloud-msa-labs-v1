@@ -1,6 +1,7 @@
 package com.sesac.orderservice.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +52,9 @@ public class OrderService {
 		order.setStatus("COMPLETED");
 
 		return orderRepository.save(order);
+	}
+
+	public List<Order> getOrdersByUserId(Long userId) {
+		return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
 	}
 }
