@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: user-service
+            uri: lb://user-service
+            predicates:
+              - Path=/api/users/**
+            filters:
+              - StripPrefix=1
+          - id: product-service
+            uri: lb://product-service
+            predicates:
+              - Path=/api/products/**
+            filters:
+              - StripPrefix=1
+          - id: order-service
+            uri: lb://order-service
+            predicates:
+              - Path=/api/orders/**
+            filters:
+              - StripPrefix=1
