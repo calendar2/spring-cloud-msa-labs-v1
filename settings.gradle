@@ -1,0 +1,6 @@
+include 'backend:product-service'
+include 'backend:user-service'
+include 'backend:order-service'
+include 'backend:config-server'
+include 'backend:eureka-server'
+include 'backend:api-gateway'
