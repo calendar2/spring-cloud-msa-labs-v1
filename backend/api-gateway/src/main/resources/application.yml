@@ -3,3 +3,5 @@ spring:
     import: "configserver:http://localhost:8888"
   application:
     name: api-gateway
+  profiles:
+    active: dev
