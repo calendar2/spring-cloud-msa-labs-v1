@@ -1,8 +1,31 @@
+server:
+  port: 8083
+
 spring:
   application:
     name: order-service
   datasource:
     url: jdbc:mysql://localhost:3307/order_service_db
 
-server:
-  port: 8083
+# User Service 호출에 대한 회복성 패턴
+resilience4j:
+  circuitbreaker:
+    instances:
+      user-service:
+        sliding-window-type: count-based
+        sliding-window-size: 3
+        minimum-number-of-calls: 3
+        failure-rate-threshold: 50 # 50% 실패 시 Circuit Open
+        permitted-number-of-calls-in-half-open-state: 2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, circuitbreakers, circuitbreakerevents
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
