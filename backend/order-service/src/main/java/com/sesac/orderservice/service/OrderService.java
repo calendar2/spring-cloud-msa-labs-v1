@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sesac.orderservice.client.ProductServiceClient;
-import com.sesac.orderservice.client.UserServiceClient;
 import com.sesac.orderservice.client.dto.ProductDto;
 import com.sesac.orderservice.client.dto.UserDto;
 import com.sesac.orderservice.dto.OrderRequestDto;
@@ -15,6 +14,8 @@ import com.sesac.orderservice.entity.Order;
 import com.sesac.orderservice.facade.UserServiceFacade;
 import com.sesac.orderservice.repository.OrderRepository;
 
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,6 +25,7 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 	private final UserServiceFacade userServiceFacade;
 	private final ProductServiceClient productServiceClient;
+	private final Tracer tracer;
 
 	public Order findById(Long id) {
 		return orderRepository.findById(id)
@@ -33,26 +35,39 @@ public class OrderService {
 	// 주문 생성 (고객이 주문했을 때)
 	@Transactional
 	public Order createOrder(OrderRequestDto request) {
-		UserDto user = userServiceFacade.getUserWithFallback(request.getUserId());
-		if (user == null) {
-			throw new RuntimeException("User not found: " + request.getUserId());
+		Span span = tracer.nextSpan()
+			.name("createOrder")
+			.tag("order.userId", request.getUserId())
+			.tag("order.productId", request.getProductId())
+			.start();
+
+		try(Tracer.SpanInScope ws = tracer.withSpan(span)) {
+			UserDto user = userServiceFacade.getUserWithFallback(request.getUserId());
+			if (user == null) {
+				throw new RuntimeException("User not found: " + request.getUserId());
+			}
+
+			ProductDto product = productServiceClient.getProductById(request.getProductId());
+			if (product == null) {
+				throw new RuntimeException("Product not found: " + request.getProductId());
+			}
+
+			if (product.getStockQuantity() < request.getQuantity()) {
+				throw new RuntimeException("재고 부족");
+			}
+
+			Order order = new Order();
+			order.setUserId(user.getId());
+			order.setTotalAmount(product.getPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
+			order.setStatus("COMPLETED");
+
+			return orderRepository.save(order);
+		} catch (Exception e) {
+			span.tag("error", e.getMessage());
+			throw e;
+		} finally {
+			span.end();
 		}
-
-		ProductDto product = productServiceClient.getProductById(request.getProductId());
-		if (product == null) {
-			throw new RuntimeException("Product not found: " + request.getProductId());
-		}
-
-		if (product.getStockQuantity() < request.getQuantity()) {
-			throw new RuntimeException("재고 부족");
-		}
-
-		Order order = new Order();
-		order.setUserId(user.getId());
-		order.setTotalAmount(product.getPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
-		order.setStatus("COMPLETED");
-
-		return orderRepository.save(order);
 	}
 
 	public List<Order> getOrdersByUserId(Long userId) {
