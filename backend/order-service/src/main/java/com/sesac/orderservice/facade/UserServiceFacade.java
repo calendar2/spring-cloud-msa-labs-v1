@@ -6,6 +6,7 @@ import com.sesac.orderservice.client.UserServiceClient;
 import com.sesac.orderservice.client.dto.UserDto;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +17,7 @@ public class UserServiceFacade {
 	private final UserServiceClient userServiceClient;
 
 	@CircuitBreaker(name = "user-service", fallbackMethod = "getUserFallback")
+	@Retry(name = "user-service")
 	public UserDto getUserWithFallback(Long userId) {
 		log.info("User service 호출 시도 - userId = {}", userId);
 		return userServiceClient.getUserById(userId);
