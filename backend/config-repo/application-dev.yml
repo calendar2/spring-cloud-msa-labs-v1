@@ -37,3 +37,13 @@ otel:
   resource:
     attributes:
       service.name: ${spring.application.name}
+
+order:
+  event:
+    exchange: order.exchange
+    queue:
+      notification: order.notification.queue
+      inventory: order.inventory.queue
+    routing-key:
+      notification: order.notification
+      inventory: order.inventory
