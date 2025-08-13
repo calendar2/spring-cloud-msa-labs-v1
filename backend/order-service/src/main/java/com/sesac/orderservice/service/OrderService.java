@@ -1,6 +1,7 @@
 package com.sesac.orderservice.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import com.sesac.orderservice.client.dto.ProductDto;
 import com.sesac.orderservice.client.dto.UserDto;
 import com.sesac.orderservice.dto.OrderRequestDto;
 import com.sesac.orderservice.entity.Order;
+import com.sesac.orderservice.event.OrderCreatedEvent;
+import com.sesac.orderservice.event.OrderEventPublisher;
 import com.sesac.orderservice.facade.UserServiceFacade;
 import com.sesac.orderservice.repository.OrderRepository;
 
@@ -26,6 +29,7 @@ public class OrderService {
 	private final UserServiceFacade userServiceFacade;
 	private final ProductServiceClient productServiceClient;
 	private final Tracer tracer;
+	private final OrderEventPublisher orderEventPublisher;
 
 	public Order findById(Long id) {
 		return orderRepository.findById(id)
@@ -52,14 +56,25 @@ public class OrderService {
 				throw new RuntimeException("Product not found: " + request.getProductId());
 			}
 
-			if (product.getStockQuantity() < request.getQuantity()) {
-				throw new RuntimeException("재고 부족");
-			}
+			// if (product.getStockQuantity() < request.getQuantity()) {
+			// 	throw new RuntimeException("재고 부족");
+			// }
 
 			Order order = new Order();
 			order.setUserId(user.getId());
 			order.setTotalAmount(product.getPrice().multiply(BigDecimal.valueOf(request.getQuantity())));
 			order.setStatus("COMPLETED");
+
+			// 비동기 이벤트 발행
+			OrderCreatedEvent event = new OrderCreatedEvent(
+				order.getId(),
+				user.getId(),
+				product.getId(),
+				request.getQuantity(),
+				order.getTotalAmount(),
+				LocalDateTime.now()
+			);
+			orderEventPublisher.publishOrderCreated(event);
 
 			return orderRepository.save(order);
 		} catch (Exception e) {
