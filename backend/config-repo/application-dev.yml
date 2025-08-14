@@ -51,8 +51,14 @@ order:
       inventory: order.inventory.queue
       payment-request: order.payment.request.queue
       inventory-failed: order.inventory.failed.queue
+      payment-completed: order.payment.completed.queue
+      payment-failed: order.payment.failed.queue
+      inventory-restore: order.inventory.restore.queue
     routing-key:
       notification: order.notification
       inventory: order.inventory
       payment-request: order.payment.request
       inventory-failed: order.inventory.failed
+      payment-completed: order.payment.completed
+      payment-failed: order.payment.failed
+      inventory-restore: order.inventory.restore
